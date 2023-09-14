@@ -1,4 +1,8 @@
 const gameContainer = document.getElementById("game");
+let card1=null;
+let card2=null;
+let isClicked=false;
+let flippedCards=0;
 
 const COLORS = [
   "red",
@@ -60,6 +64,51 @@ function createDivsForColors(colorArray) {
 // TODO: Implement this function!
 function handleCardClick(event) {
   // you can use event.target to see which element was clicked
+  //if already clicked then do nothing
+  if(isClicked)
+    return;
+  //if card is already flipped than do nothing
+  if(event.target.classList.contains("flipped"))
+    return;
+
+  
+  let currCard=event.target;
+  currCard.style.backgroundColor = currCard.classList[0];
+
+  if(!card1 || !card2)
+  {
+    currCard.classList.add("flipped");
+    card1 = card1 || currCard;
+    card2 = currCard === card1 ? null : currCard;
+  }
+  if (card1 && card2) {
+    isClicked = true;
+    // debugger
+    let col1 = card1.className;
+    let col2 = card2.className;
+    //if two cards matches
+    if (col1 === col2) {
+      flippedCards += 2;
+      card1.removeEventListener("click", handleCardClick);
+      card2.removeEventListener("click", handleCardClick);
+      card1 = null;
+      card2 = null;
+      isClicked = false;
+    } else {//if two cards dosent match then reset after 1sec
+      setTimeout(function() {
+        card1.style.backgroundColor = "";
+        card2.style.backgroundColor = "";
+        card1.classList.remove("flipped");
+        card2.classList.remove("flipped");
+        card1 = null;
+        card2 = null;
+        isClicked = false;
+      }, 1000);
+    }
+  }
+
+  if (flippedCards === COLORS.length) alert("game over!");
+
   console.log("you just clicked", event.target);
 }
 
